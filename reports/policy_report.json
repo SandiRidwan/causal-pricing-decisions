@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-09-29T20:30:47.810677+00:00",
+  "seed": 42,
+  "policy": {
+    "name": "Diskon Terarah Kategori (Targeted Category Discount)",
+    "treated_category_hint": [
+      "Bakery & Cakes",
+      "Drinks",
+      "Beers, Wines & Spirits"
+    ],
+    "discount_pct": 15.0,
+    "duration_weeks": 8,
+    "pre_weeks": 12,
+    "post_weeks": 12
+  },
+  "ground_truth": {
+    "elasticity_true": -1.4,
+    "treated_categories": [
+      "Drinks",
+      "Bakery & Cakes"
+    ],
+    "discount_pct": 15.0,
+    "effect_on_units_pct_true": 21.0,
+    "treated_gp_post_mean": 11.594231218274112,
+    "control_gp_post_mean": 23.895704115163145,
+    "effect_on_gross_profit_pct_true": -51.47985109626072,
+    "n_units": 11208,
+    "n_weeks": 32
+  },
+  "did": {
+    "did_abs": -2.127231098398566,
+    "did_pct_of_control": -8.902148637874705,
+    "treated_pre": 13.551275528764805,
+    "treated_post": 11.594231218274112,
+    "control_pre": 23.725517327255275,
+    "control_post": 23.89570411516315,
+    "n_pre": 12,
+    "n_post": 20
+  },
+  "parallel_trends": {
+    "slope": -0.030631281573503557,
+    "p_value": 0.5921409170765397,
+    "ok": true,
+    "note": "slope kecil & tak signifikan = tren paralel"
+  },
+  "synthetic_control": {
+    "effect_abs": -6.325841088696589,
+    "effect_pct": -36.07607566231464,
+    "pre_gap_rmse": 4.246623021677492,
+    "pre_gap_mean": -4.241011553244361,
+    "n_donors": 16,
+    "weights_top": [
+      [
+        "Fresh Foods",
+        0.234
+      ],
+      [
+        "Toys, Clothing & Entertainment",
+        0.192
+      ],
+      [
+        "Toiletries & Beauty",
+        0.15
+      ],
+      [
+        "Meat & Fish",
+        0.096
+      ],
+      [
+        "Treats & Snacks",
+        0.076
+      ]
+    ],
+    "treated_categories": [
+      "Bakery & Cakes",
+      "Drinks"
+    ]
+  },
+  "bootstrap": {
+    "boot_mean": -2.1266852987087366,
+    "ci_low": -2.2821366659666977,
+    "ci_high": -1.9662077502170887,
+    "n_boot": 1500,
+    "excludes_zero": true
+  },
+  "placebo": {
+    "real_abs_did": 2.127231098398566,
+    "placebo_p_value": 1.0,
+    "n_perm": 500,
+    "significant_at_05": false
+  },
+  "sensitivity": {
+    "by_metric": {
+      "units_sold": {
+        "did_abs": 1.5522838869754594,
+        "did_pct": 10.172384813805934
+      },
+      "revenue": {
+        "did_abs": 1.063328421383119,
+        "did_pct": 1.3349618173066617
+      },
+      "gross_profit": {
+        "did_abs": -2.127231098398566,
+        "did_pct": -8.902148637874705
+      }
+    },
+    "same_direction_all_metrics": false
+  },
+  "cuped": {
+    "ok": true,
+    "theta": 2.08119361866896,
+    "effect_raw": -12.301472896889035,
+    "effect_cuped": -10.861983888416944,
+    "var_reduction_pct": 33.65570371134533
+  },
+  "decision": {
+    "primary_method": "Synthetic Control",
+    "did_pct": -8.902148637874705,
+    "synth_pct": -36.07607566231464,
+    "synth_fit_ok": true,
+    "bootstrap_ci": [
+      -2.2821366659666977,
+      -1.9662077502170887
+    ],
+    "placebo_p": 1.0,
+    "metrics_agree": false,
+    "decision": {
+      "tier": "HENTIKAN",
+      "badge": "\ud83d\udd34",
+      "method": "Synthetic Control",
+      "effect_abs": -6.325841088696589,
+      "effect_pct": -36.07607566231464,
+      "ci_low": -2.2821366659666977,
+      "ci_high": -1.9662077502170887,
+      "excludes_zero": true,
+      "material": true,
+      "guardrail_ok": true,
+      "reasons": [
+        "Efek NEGATIF: kebijakan menurunkan metrik utama (rugi) \u2014 hentikan atau rancang ulang."
+      ]
+    }
+  },
+  "annualized_value": {
+    "annual_effect_point": -10.279491769131958,
+    "annual_effect_low": -3.708472082195884,
+    "annual_effect_high": -3.195087594102769,
+    "scale_factor": 1.625,
+    "note": "Nilai tahunan = efek mingguan \u00d7 (52/minggu observasi)."
+  }
+}

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build catalog (fetch Morrisons if absent)
+        run: |
+          # portfolio shares the real Morrisons catalog; if absent we still
+          # exercise the panel DGP with a synthetic fallback catalog.
+          python - <<'PY'
+          import os, pandas as pd
+          p = os.path.join('..', 'morrisons-market-intelligence',
+                           'data', 'processed', 'morrisons_clean.csv')
+          if not os.path.exists(p):
+              os.makedirs('data/raw', exist_ok=True)
+          print('catalog present:', os.path.exists(p))
+          PY
+      - name: Run pipeline (panel + causal + decision)
+        run: python src/run_pipeline.py
+      - name: Spec audit
+        run: python src/spec_audit.py
+      - name: Tests
+        run: python -m pytest tests/ -q

@@ -1,0 +1,12 @@
+# Data & artefak besar
+data/raw/*.parquet
+data/staging/
+data/marts/*.parquet
+db/*.duckdb
+reports/figures/*.png
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.streamlit/secrets.toml
