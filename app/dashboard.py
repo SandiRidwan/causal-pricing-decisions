@@ -175,11 +175,21 @@ with tab1:
         st.metric("Control: pre → post",
                   f"{did['control_pre']:,.0f} → {did['control_post']:,.0f}")
 
+    # Sumber tren: utamakan event_study (kecil, ter-commit) agar chart selalu
+    # muncul bahkan saat panel besar belum dibangun. Fallback ke panel.
+    es_trend = load_mart("event_study")
     panel = load_mart("price_panel")
-    if len(panel):
-        ws = (panel.groupby(["week", "is_treated"])["gross_profit"].sum()
+    ws = None
+    if len(es_trend) and {"week", "treated", "control"} <= set(es_trend.columns):
+        ws = es_trend[["week", "treated", "control"]].rename(
+            columns={"treated": "Treated", "control": "Control"}).copy()
+        _post = float(es_trend.loc[es_trend["is_post"], "week"].min())
+    elif len(panel):
+        ws = (panel.groupby(["week", "is_treated"])["gross_profit"].mean()
               .unstack().rename(columns={True: "Treated", False: "Control"})
               .reset_index())
+        _post = float(panel.loc[panel["is_post"], "week"].min())
+    if ws is not None and len(ws):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=ws["week"], y=ws["Treated"], name="Treated",
                                  mode="lines+markers",
@@ -187,8 +197,7 @@ with tab1:
         fig.add_trace(go.Scatter(x=ws["week"], y=ws["Control"], name="Control",
                                  mode="lines+markers",
                                  line=dict(color=C["blue"], width=2.6)))
-        _post = panel.loc[panel["is_post"], "week"].min()
-        fig.add_vline(x=float(_post) - 0.5, line_dash="dash",
+        fig.add_vline(x=_post - 0.5, line_dash="dash",
                       line_color="#8B9AA6",
                       annotation_text="intervensi", annotation_font_size=10)
         style(fig, 440).update_layout(
