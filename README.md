@@ -51,7 +51,7 @@ tests**, and ends in an explicit **decision tier** with an **annualised $ value*
 | Property | Value |
 |---|---:|
 | Methods implemented | **6** (DiD · Event study · Synthetic Control · CUPED · Bootstrap CI · Placebo) |
-| Real data (Morrisons catalog) | **11,208 products** |
+| Real data (Morrisons catalog) | **11,208 products** (bundled as a compact parquet) |
 | Controlled panel | **358,656 rows** (11,208 units × 32 weeks) |
 | Validated against ground truth | **yes** (effect planted = −51.5% gross profit) |
 | Automated tests | **21 passing** |

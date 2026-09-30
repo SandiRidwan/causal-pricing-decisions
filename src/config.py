@@ -42,9 +42,14 @@ DB_FILE = DB / "causal_pricing.duckdb"
 
 # ---- Sumber NYATA ----------------------------------------------------------
 # Katalog ritel Morrisons (dipakai ulang dari project morrisons-market-
-# intelligence agar tidak scraping ulang; berasal dari groceries.morrisons.com).
-MORRISONS_CSV = (ROOT.parent / "morrisons-market-intelligence" / "data" /
-                 "processed" / "morrisons_clean.csv")
+# intelligence). Disimpan sebagai parquet RINGKAS (~447 KB) di data/raw agar
+# ikut ter-deploy (Cloud), dengan prioritas:
+#   1) data/raw/morrisons_catalog.parquet  (bundled, ringkas)  ← utama
+#   2) ../morrisons-market-intelligence/.../morrisons_clean.csv (lokal, penuh)
+#   3) katalog sintetis cadangan (berlabel) bila keduanya tak ada
+CATALOG_PARQUET = RAW / "morrisons_catalog.parquet"
+CATALOG_CSV = (ROOT.parent / "morrisons-market-intelligence" / "data" /
+               "processed" / "morrisons_clean.csv")
 
 # ---- Palet warna (konsisten dengan portofolio lain) ------------------------
 COLORS = {

@@ -31,7 +31,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from config import (ASSUMED_GROSS_MARGIN, MORRISONS_CSV, POLICY, RAW, SEED)
+from config import (ASSUMED_GROSS_MARGIN, CATALOG_CSV, CATALOG_PARQUET,  # noqa
+                    POLICY, RAW, SEED)
 
 RNG = np.random.default_rng(SEED)
 
@@ -61,13 +62,28 @@ def _synthetic_catalog(n: int = 600) -> pd.DataFrame:
 
 
 def load_catalog() -> pd.DataFrame:
-    """Muat katalog ritel nyata (Morrisons). Kolom distandarkan."""
-    if not MORRISONS_CSV.exists():
+    """
+    Muat katalog ritel nyata (Morrisons). Prioritas sumber:
+      1) parquet ringkas yang di-bundle (Cloud-friendly)  → data/raw
+      2) CSV penuh lokal (project morrisons-market-intelligence)
+      3) katalog sintetis cadangan (BERLABEL) bila tak ada
+    Kolom distandarkan: product_id, category, price, rating, reviews.
+    """
+    if CATALOG_PARQUET.exists():
+        df = pd.read_parquet(CATALOG_PARQUET)
+        df["category"] = df["category"].astype(str).str.strip()
+        df["price"] = pd.to_numeric(df["price"], errors="coerce")
+        df["rating"] = pd.to_numeric(df["rating"], errors="coerce")
+        df["reviews"] = pd.to_numeric(df["reviews"], errors="coerce")
+        return df.dropna(subset=["price"]).query("price > 0").reset_index(
+            drop=True)
+
+    if not CATALOG_CSV.exists():
         # fallback yang JUJUR: katalog sintetis berlabel, agar reproducible
         cat = _synthetic_catalog()
         cat["_synthetic"] = True
         return cat
-    df = pd.read_csv(MORRISONS_CSV, low_memory=False)
+    df = pd.read_csv(CATALOG_CSV, low_memory=False)
     # standarkan kolom yang dipakai
     keep = ["product_id", "name", "brand", "cat1", "effective_price",
             "list_price", "discount_pct", "is_promo", "rating", "reviews"]

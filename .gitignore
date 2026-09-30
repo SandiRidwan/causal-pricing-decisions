@@ -1,8 +1,9 @@
 # Data & artefak besar
-data/raw/*.parquet
+# katalog ringkas (parquet, ~447 KB) DI-COMMIT agar Cloud pakai data NYATA
+# dan angka konsisten dengan README.
+data/raw/price_panel.parquet
+data/raw/retail_catalog.parquet
 data/staging/
-# marts kecil (hasil pra-hitung) DI-COMMIT agar dashboard Cloud jalan tanpa
-# membangun ulang; panel besar diabaikan (dibangun otomatis oleh app).
 data/marts/price_panel.parquet
 db/*.duckdb
 reports/figures/*.png
