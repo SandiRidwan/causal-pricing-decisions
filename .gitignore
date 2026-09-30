@@ -1,7 +1,9 @@
 # Data & artefak besar
 data/raw/*.parquet
 data/staging/
-data/marts/*.parquet
+# marts kecil (hasil pra-hitung) DI-COMMIT agar dashboard Cloud jalan tanpa
+# membangun ulang; panel besar diabaikan (dibangun otomatis oleh app).
+data/marts/price_panel.parquet
 db/*.duckdb
 reports/figures/*.png
 __pycache__/

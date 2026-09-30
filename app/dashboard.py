@@ -39,6 +39,33 @@ def _src() -> str:
     return "none"
 
 
+def _need_data() -> bool:
+    """Butuh bootstrap bila laporan ATAU panel (untuk chart) belum ada."""
+    report_ok = (REPORTS / "policy_report.json").exists()
+    panel_ok = (MARTS / "price_panel.parquet").exists() or DB_FILE.exists()
+    return not (report_ok and panel_ok)
+
+
+def _bootstrap_if_needed() -> None:
+    """
+    Self-bootstrap untuk deploy Cloud: bila laporan/panel belum ada
+    (mis. data/ tidak ter-commit), jalankan pipeline SEKALI di sini.
+    Di Cloud, katalog Morrisons mungkin tak tersedia → ingest otomatis
+    memakai katalog sintetis cadangan (berlabel), sehingga app tetap jalan.
+    """
+    if not _need_data():
+        return
+    import subprocess
+    with st.spinner("Menyiapkan data (menjalankan pipeline sekali, ~30–60 dtk)..."):
+        r = subprocess.run([sys.executable, str(ROOT / "src" / "run_pipeline.py")],
+                           cwd=str(ROOT), capture_output=True, text=True)
+    if r.returncode != 0 and _src() == "none":
+        st.error("Bootstrap pipeline gagal.")
+        st.code((r.stderr or r.stdout)[-1500:], language="text")
+        st.stop()
+
+
+_bootstrap_if_needed()
 _S = _src()
 if _S == "none":
     st.error("Laporan belum ada. Jalankan: `python src/run_pipeline.py`")
